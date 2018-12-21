@@ -7,7 +7,7 @@ with open("README.md", 'r') as f:
 
 setup(
     name='Facextractor',
-    version='1.0.0',
+    version='1.0.1',
     description='Facebook Data Extractor, simple tool for read and analyze facebook dump (JSON format)',
     author='Jakub Janeček',
     author_email='jakub.janecek@fw-fw.cz',

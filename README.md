@@ -8,7 +8,7 @@ Facebook Data Extractor, simple tool for read and analyze facebook dump (JSON fo
 
 PyPI
 ```bash
-pip install facextractor
+pip install Facextractor
 ```
 
 or from source:
