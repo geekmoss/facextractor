@@ -42,7 +42,7 @@ facextractor friends ./facebook-dump -f "John Doe"
 facextractor friends ./facebook-dump -p -f "John Doe" 
 ```
 
-### Python Packages
+### Python Modules
 
 ```python
 from Facextractor import Friends, Threads
