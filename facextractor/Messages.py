@@ -11,7 +11,7 @@ class Threads(Base):
     threads = []
 
     def _startup(self):
-        g = glob(join(self._path, 'messages/*/message.json'))
+        g = glob(join(self._path, 'messages/*/*/message.json'))
         if self._verbose:
             with progressbar(g, length=len(g), label="Loading data") as bar:
                 for x in bar:
@@ -52,6 +52,7 @@ class Threads(Base):
             self.__analysis.texts += t.analysis.texts
             self.__analysis.plan += t.analysis.plan
             self.__analysis.gifs += t.analysis.gifs
+            self.__analysis.missed += t.analysis.missed
             pass
         return self.__analysis
     pass
@@ -110,6 +111,7 @@ Audios:         {self.analysis.audio_files}
 Shares:         {self.analysis.share}
 Plans:          {self.analysis.plan}
 Calls:          {self.analysis.calls}
+Missed calls:   {self.analysis.missed}
 Calls duration: {d}s => ~{d // 60}m => ~{d // (60 * 60)}h
 """
         pass
@@ -119,8 +121,8 @@ class Thread:
     """ Object represents single thread """
     __analysis = None
 
-    def __init__(self, messages: list, title: str, status, is_still_participant: bool, thread_type, thread_path,
-                 participants=None):
+    def __init__(self, messages: list, title: str, is_still_participant: bool, thread_type, thread_path,
+                 participants=None, status=None):
         """
         :param list messages:
         :param str title:
@@ -194,6 +196,7 @@ class Thread:
             elif m.call_duration:
                 self.__analysis.calls += 1
                 self.__analysis.call_duration += m.call_duration
+                self.__analysis.missed += int(m.missed) if m.missed else 0
                 pass
             elif m.content:
                 self.__analysis.texts += 1
@@ -226,6 +229,7 @@ Audios:         {self.analysis.audio_files}
 Shares:         {self.analysis.share}
 Plans:          {self.analysis.plan}
 Calls:          {self.analysis.calls}
+Missed calls:   {self.analysis.missed}
 Calls duration: {d}s => ~{d // 60}m => ~{d // (60 * 60)}h
         """
         pass
@@ -237,12 +241,12 @@ Calls duration: {d}s => ~{d // 60}m => ~{d // (60 * 60)}h
 
 class Message:
     """ Object represents single message. """
-    def __init__(self, sender_name, timestamp, content=None, type: str = 'Generic', sticker=None, photos=None,
+    def __init__(self, sender_name, timestamp_ms, content=None, type: str = 'Generic', sticker=None, photos=None,
                  reactions=None, gifs=None, call_duration=None, share=None, files=None, videos=None, audio_files=None,
-                 plan=None):
+                 plan=None, missed=None, users=None):
         """
         :param sender_name:
-        :param timestamp:
+        :param timestamp_ms:
         :param content:
         :param str type:
         :param sticker:
@@ -255,9 +259,11 @@ class Message:
         :param videos:
         :param audio_files:
         :param plan:
+        :param missed: Boolean for missed call
+        :param users: Users in special msg type, for example leave from group.
         """
         self.sender_name = sender_name
-        self.timestamp = timestamp
+        self.timestamp = timestamp_ms
         self.content = content
         self.type = type
         self.sticker = sticker
@@ -270,6 +276,8 @@ class Message:
         self.videos = videos
         self.audio_files = audio_files
         self.plan = plan
+        self.missed = missed
+        self.users = users
         pass
 
     def __repr__(self):
@@ -291,5 +299,6 @@ class Analysis:
         self.audio_files = 0
         self.call_duration = 0
         self.calls = 0
+        self.missed = 0
         pass
     pass
